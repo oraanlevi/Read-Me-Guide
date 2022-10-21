@@ -1,8 +1,13 @@
-const inquirer = require('inquirer'); 
+//import fetch from "node-fetch";
+const inquirer = require('inquirer');
+//import { prompt } from 'inquirer'; 
+//import { writeFileSync } from 'fs';
 const fs = require('fs');
+//import { join } from 'path';
+const path = require('path');
 const generateMarkDown = require('./lib/Readme');
-console.log('Here goes my README generator')
-console.log('Answer thr following questions to generate a high quality README for your project');
+console.log('Here is my README generator')
+console.log('Answer the following questions to generate a high quality README for your project');
 
 const questions = [
 
@@ -21,13 +26,13 @@ const questions = [
 
     { type: 'input',
 name: 'description',
-message: 'Provide a description of your project.',
+message: 'Provide a description of your project. What was your motivation?',
 validate: your_description => { 
     if(your_description) {
         return true;
 
     } else {
-        console.log('Enter a prokject description!');
+        console.log('Enter a project description!');
         return false;
     }
 }},
@@ -52,7 +57,7 @@ validate: your_description => {
 {
     type: 'input',
     name: 'usage',
-    message: 'How do you use this project?',
+    message: 'How do you use this project? Example; Any Screenshots needed to be added?',
     validate: your_usage =>
     { if(your_usage) {
         return true;
@@ -62,12 +67,18 @@ validate: your_description => {
         return false;
     }
     }
-}
+},
 
 {
     type: 'checkbox',
     name: 'license',
     message: 'Choose a license that will be the best for your project',
+    choices: [
+        "Apche",
+        "Boos.",
+        "BsD"
+
+    ],
     validate: your_license =>
     { if(your_license) {
         return true;
@@ -87,7 +98,7 @@ validate: your_description => {
         return true;
 
     } else {
-        console.log('Provide information on hoe to contribute to this project.');
+        console.log('Provide information on how to contribute to this project. Who would you give Credit too?');
         return false;
     }
     }
@@ -106,3 +117,47 @@ validate: your_description => {
     }
     }
 },
+{
+    type: 'input',
+    name: 'github',
+    message: 'Enter your Github Username (Required).',
+    validate: github_input =>
+    { if(github_input) {
+        return true;
+
+    } else {
+        console.log('Enter your GitHub username.');
+        return false;
+    }
+    }
+},
+{
+    type: 'input',
+    name: 'email',
+    message: 'Enter your email for any questions about this generator.',
+    validate: email_input =>
+    { if(email_input) {
+        return true;
+
+    } else {
+        console.log('Please enter your email');
+        return false;
+    }
+        }
+}
+];
+
+function writeToFile(fileName, data) {
+   return fs.writeFileSync(path.join(process.cwd(),fileName), data)
+};
+
+function init() {
+    inquirer.prompt(questions)
+    .then(function (userInput) {
+        console.log('Generating README')
+        writeToFile("README.md", generateMarkDown({...userInput}));
+    
+    });
+};
+
+init()
